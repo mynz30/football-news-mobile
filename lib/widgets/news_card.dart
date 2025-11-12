@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:football_news_mobile/screens/newslist_form.dart';
+import 'package:football_news_mobile/screens/news_entry_list.dart'; // TAMBAHKAN
+import 'package:football_news_mobile/screens/login.dart'; // TAMBAHKAN
+import 'package:pbp_django_auth/pbp_django_auth.dart'; // TAMBAHKAN
+import 'package:provider/provider.dart'; // TAMBAHKAN
 
 class ItemHomepage {
   final String name;
@@ -15,11 +19,13 @@ class ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>(); // TAMBAHKAN
+    
     return Material(
       color: Theme.of(context).colorScheme.secondary,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap: () {
+        onTap: () async { // UBAH JADI async
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
@@ -33,6 +39,41 @@ class ItemCard extends StatelessWidget {
                 builder: (context) => const NewsFormPage(),
               ),
             );
+          } 
+          // TAMBAHKAN INI
+          else if (item.name == "See Football News") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NewsEntryListPage(),
+              ),
+            );
+          }
+          // TAMBAHKAN INI untuk Logout
+          else if (item.name == "Logout") {
+            // GANTI URL sesuai kebutuhan
+            final response = await request.logout(
+                "http://10.0.2.2:8000/auth/logout/");
+                // Untuk web: "http://localhost:8000/auth/logout/"
+            String message = response["message"];
+            if (context.mounted) {
+              if (response['status']) {
+                String uname = response["username"];
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text("$message See you again, $uname."),
+                ));
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(message),
+                  ),
+                );
+              }
+            }
           }
         },
         child: Container(

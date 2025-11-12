@@ -119,7 +119,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       // Untuk Android emulator gunakan http://10.0.2.2/
                       // Untuk Chrome gunakan http://localhost:8000
                       final response = await request.postJson(
-                          "http://localhost:8000/auth/register/",
+                          "http://10.0.2.2:8000/auth/register/",
                           jsonEncode({
                             "username": username,
                             "password1": password1,

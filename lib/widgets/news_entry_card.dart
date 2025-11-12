@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:football_news/models/news_entry.dart';
+import 'package:football_news_mobile/models/news_entry.dart';
 
 class NewsEntryCard extends StatelessWidget {
   final NewsEntry news;
@@ -30,20 +30,23 @@ class NewsEntryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Thumbnail
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: Image.network(
-                    'http://localhost:8000/proxy-image/?url=${Uri.encodeComponent(news.thumbnail)}',
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
+                if (news.thumbnail.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      // GANTI URL sesuai kebutuhan
+                      'http://10.0.2.2:8000/proxy-image/?url=${Uri.encodeComponent(news.thumbnail)}',
+                      // Untuk web: 'http://localhost:8000/proxy-image/?url=${Uri.encodeComponent(news.thumbnail)}'
                       height: 150,
-                      color: Colors.grey[300],
-                      child: const Center(child: Icon(Icons.broken_image)),
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        height: 150,
+                        color: Colors.grey[300],
+                        child: const Center(child: Icon(Icons.broken_image)),
+                      ),
                     ),
                   ),
-                ),
                 const SizedBox(height: 8),
 
                 // Title

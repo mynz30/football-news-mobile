@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:football_news/models/news_entry.dart';
-import 'package:football_news/widgets/left_drawer.dart';
-import 'package:football_news/screens/news_detail.dart';
-import 'package:football_news/widgets/news_entry_card.dart';
+import 'package:football_news_mobile/models/news_entry.dart';
+import 'package:football_news_mobile/widgets/left_drawer.dart';
+import 'package:football_news_mobile/screens/news_detail.dart';
+import 'package:football_news_mobile/widgets/news_entry_card.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 
@@ -15,16 +15,12 @@ class NewsEntryListPage extends StatefulWidget {
 
 class _NewsEntryListPageState extends State<NewsEntryListPage> {
   Future<List<NewsEntry>> fetchNews(CookieRequest request) async {
-    // TODO: Replace the URL with your app's URL and don't forget to add a trailing slash (/)!
-    // To connect Android emulator with Django on localhost, use URL http://10.0.2.2/
-    // If you using chrome,  use URL http://localhost:8000
+    // GANTI URL sesuai kebutuhan
+    final response = await request.get('http://10.0.2.2:8000/json/');
+    // Untuk web: 'http://localhost:8000/json/'
     
-    final response = await request.get('http://[YOUR_APP_URL]/json/');
-    
-    // Decode response to json format
     var data = response;
     
-    // Convert json data to NewsEntry objects
     List<NewsEntry> listNews = [];
     for (var d in data) {
       if (d != null) {
@@ -48,8 +44,9 @@ class _NewsEntryListPageState extends State<NewsEntryListPage> {
           if (snapshot.data == null) {
             return const Center(child: CircularProgressIndicator());
           } else {
-            if (!snapshot.hasData) {
+            if (!snapshot.hasData || snapshot.data.isEmpty) {
               return const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'There are no news in football news yet.',
@@ -64,14 +61,14 @@ class _NewsEntryListPageState extends State<NewsEntryListPage> {
                 itemBuilder: (_, index) => NewsEntryCard(
                   news: snapshot.data![index],
                   onTap: () {
-                    // Show a snackbar when news card is clicked
-                    ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(
-                        SnackBar(
-                          content: Text("You clicked on ${snapshot.data![index].title}"),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NewsDetailPage(
+                          news: snapshot.data![index],
                         ),
-                      );
+                      ),
+                    );
                   },
                 ),
               );

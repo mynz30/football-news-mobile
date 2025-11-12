@@ -1,12 +1,11 @@
-// To parse this JSON data, do
-//
-//     final newsEntry = newsEntryFromJson(jsonString);
-
+// lib/models/news_entry.dart
 import 'dart:convert';
 
-List<NewsEntry> newsEntryFromJson(String str) => List<NewsEntry>.from(json.decode(str).map((x) => NewsEntry.fromJson(x)));
+List<NewsEntry> newsEntryFromJson(String str) => 
+    List<NewsEntry>.from(json.decode(str).map((x) => NewsEntry.fromJson(x)));
 
-String newsEntryToJson(List<NewsEntry> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String newsEntryToJson(List<NewsEntry> data) => 
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class NewsEntry {
     String id;
@@ -18,6 +17,7 @@ class NewsEntry {
     DateTime createdAt;
     bool isFeatured;
     int? userId;
+    String? userUsername; // TAMBAHKAN INI
 
     NewsEntry({
         required this.id,
@@ -29,6 +29,7 @@ class NewsEntry {
         required this.createdAt,
         required this.isFeatured,
         this.userId,
+        this.userUsername, // TAMBAHKAN INI
     });
 
     factory NewsEntry.fromJson(Map<String, dynamic> json) => NewsEntry(
@@ -41,6 +42,7 @@ class NewsEntry {
         createdAt: DateTime.parse(json["created_at"]),
         isFeatured: json["is_featured"],
         userId: json["user_id"],
+        userUsername: json["user_username"], // TAMBAHKAN INI
     );
 
     Map<String, dynamic> toJson() => {
@@ -53,5 +55,6 @@ class NewsEntry {
         "created_at": createdAt.toIso8601String(),
         "is_featured": isFeatured,
         "user_id": userId,
+        "user_username": userUsername, // TAMBAHKAN INI
     };
 }

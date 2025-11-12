@@ -100,8 +100,7 @@ class _LoginPageState extends State<LoginPage> {
                       // TODO: Ganti URL dengan URL aplikasi Anda
                       // Untuk Android emulator gunakan http://10.0.2.2/
                       // Untuk Chrome gunakan http://localhost:8000
-                      final response = await request
-                          .login("http://localhost:8000/auth/login/", {
+                      final response = await request.login("http://10.0.2.2:8000/auth/login/", {
                         'username': username,
                         'password': password,
                       });
