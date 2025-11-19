@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:football_news_mobile/screens/login.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:football_news_mobile/config/config.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -115,11 +116,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       String password1 = _passwordController.text;
                       String password2 = _confirmPasswordController.text;
 
-                      // TODO: Ganti URL dengan URL aplikasi Anda
-                      // Untuk Android emulator gunakan http://10.0.2.2/
-                      // Untuk Chrome gunakan http://localhost:8000
+                      // PERBAIKAN: Gunakan Config class
                       final response = await request.postJson(
-                          "http://localhost:8000/auth/register/",
+                          Config.registerUrl,
                           jsonEncode({
                             "username": username,
                             "password1": password1,

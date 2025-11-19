@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:football_news_mobile/screens/register.dart';
+import 'package:football_news_mobile/config/config.dart';
 
 void main() {
   runApp(const LoginApp());
@@ -97,11 +98,8 @@ class _LoginPageState extends State<LoginPage> {
                       String username = _usernameController.text;
                       String password = _passwordController.text;
 
-                      // TODO: Ganti URL dengan URL aplikasi Anda
-                      // Untuk Android emulator gunakan http://10.0.2.2/
-                      // Untuk Chrome gunakan http://localhost:8000
-                      final response = await request
-                          .login("http://localhost:8000/auth/login/", {
+                      // PERBAIKAN: Gunakan Config class
+                      final response = await request.login(Config.loginUrl, {
                         'username': username,
                         'password': password,
                       });

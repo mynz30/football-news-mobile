@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:football_news_mobile/screens/menu.dart';
 import 'package:football_news_mobile/screens/newslist_form.dart';
+import 'package:football_news_mobile/screens/news_entry_list.dart'; // TAMBAHKAN
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -57,6 +58,18 @@ class LeftDrawer extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const NewsFormPage(),
+                  ));
+            },
+          ),
+          // TAMBAHKAN INI
+          ListTile(
+            leading: const Icon(Icons.list),
+            title: const Text('News List'),
+            onTap: () {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NewsEntryListPage(),
                   ));
             },
           ),
