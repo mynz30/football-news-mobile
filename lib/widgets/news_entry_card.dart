@@ -31,21 +31,53 @@ class NewsEntryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Thumbnail
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: Image.network(
-                    'http://localhost:8000/proxy-image/?url=${Uri.encodeComponent(news.thumbnail)}',
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
+                if (news.thumbnail.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      // PERBAIKAN: Gunakan Config class
+                      Config.getProxyImageUrl(news.thumbnail),
                       height: 150,
-                      color: Colors.grey[300],
-                      child: const Center(child: Icon(Icons.broken_image)),
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          height: 150,
+                          color: Colors.grey[300],
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        print('Error loading image: $error');
+                        return Container(
+                          height: 150,
+                          color: Colors.grey[300],
+                          child: const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Image unavailable',
+                                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                ),
-                const SizedBox(height: 8),
+                if (news.thumbnail.isNotEmpty) const SizedBox(height: 8),
 
                 // Title
                 Text(

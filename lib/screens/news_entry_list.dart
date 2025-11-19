@@ -16,20 +16,27 @@ class NewsEntryListPage extends StatefulWidget {
 
 class _NewsEntryListPageState extends State<NewsEntryListPage> {
   Future<List<NewsEntry>> fetchNews(CookieRequest request) async {
-    // TODO: Replace the URL with your app's URL and don't forget to add a trailing slash (/)!
-    // To connect Android emulator with Django on localhost, use URL http://10.0.2.2/
-    // If you using chrome,  use URL http://localhost:8000
-    
-    final response = await request.get('http://[YOUR_APP_URL]/json/');
-    
-    // Decode response to json format
-    var data = response;
-    
-    // Convert json data to NewsEntry objects
-    List<NewsEntry> listNews = [];
-    for (var d in data) {
-      if (d != null) {
-        listNews.add(NewsEntry.fromJson(d));
+    try {
+      // Gunakan Config class
+      final response = await request.get(Config.newsListUrl);
+      
+      // Debug: print response untuk melihat struktur data
+      print('Response from API: $response');
+      
+      // Decode response
+      var data = response;
+      
+      // Convert json data to NewsEntry objects
+      List<NewsEntry> listNews = [];
+      for (var d in data) {
+        if (d != null) {
+          try {
+            listNews.add(NewsEntry.fromJson(d));
+          } catch (e) {
+            print('Error parsing news item: $e');
+            print('Problematic data: $d');
+          }
+        }
       }
       return listNews;
     } catch (e) {
@@ -53,9 +60,36 @@ class _NewsEntryListPageState extends State<NewsEntryListPage> {
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          } else {
-            if (!snapshot.hasData) {
-              return const Column(
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    color: Colors.red,
+                    size: 60,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error: ${snapshot.error}',
+                    style: const TextStyle(fontSize: 16, color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {}); // Refresh
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          } else if (!snapshot.hasData || snapshot.data.isEmpty) {
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.newspaper,
@@ -69,25 +103,25 @@ class _NewsEntryListPageState extends State<NewsEntryListPage> {
                     textAlign: TextAlign.center,
                   ),
                 ],
-              );
-            } else {
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (_, index) => NewsEntryCard(
-                  news: snapshot.data![index],
-                  onTap: () {
-                    // Show a snackbar when news card is clicked
-                    ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(
-                        SnackBar(
-                          content: Text("You clicked on ${snapshot.data![index].title}"),
-                        ),
-                      );
-                  },
-                ),
-              );
-            }
+              ),
+            );
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (_, index) => NewsEntryCard(
+                news: snapshot.data![index],
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewsDetailPage(
+                        news: snapshot.data![index],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
           }
         },
       ),
