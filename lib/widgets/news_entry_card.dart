@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:football_news_mobile/models/news_entry.dart';
+import 'package:football_news_mobile/config/config.dart';
 
 class NewsEntryCard extends StatelessWidget {
   final NewsEntry news;
@@ -34,9 +35,8 @@ class NewsEntryCard extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(6),
                     child: Image.network(
-                      // GANTI URL sesuai kebutuhan
-                      'http://10.0.2.2:8000/proxy-image/?url=${Uri.encodeComponent(news.thumbnail)}',
-                      // Untuk web: 'http://localhost:8000/proxy-image/?url=${Uri.encodeComponent(news.thumbnail)}'
+                      // PERBAIKAN: Gunakan Config class
+                      Config.getProxyImageUrl(news.thumbnail),
                       height: 150,
                       width: double.infinity,
                       fit: BoxFit.cover,

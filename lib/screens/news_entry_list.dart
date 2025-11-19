@@ -5,6 +5,7 @@ import 'package:football_news_mobile/screens/news_detail.dart';
 import 'package:football_news_mobile/widgets/news_entry_card.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:football_news_mobile/config/config.dart';
 
 class NewsEntryListPage extends StatefulWidget {
   const NewsEntryListPage({super.key});
@@ -15,12 +16,12 @@ class NewsEntryListPage extends StatefulWidget {
 
 class _NewsEntryListPageState extends State<NewsEntryListPage> {
   Future<List<NewsEntry>> fetchNews(CookieRequest request) async {
-    // GANTI URL sesuai kebutuhan
-    final response = await request.get('http://10.0.2.2:8000/json/');
-    // Untuk web: 'http://localhost:8000/json/'
+    // PERBAIKAN: Gunakan Config class
+    final response = await request.get(Config.newsListUrl);
     
     var data = response;
     
+    // PERBAIKAN: Simplify using map
     List<NewsEntry> listNews = [];
     for (var d in data) {
       if (d != null) {

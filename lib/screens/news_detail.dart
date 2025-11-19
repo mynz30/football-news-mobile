@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:football_news_mobile/models/news_entry.dart';
+import 'package:football_news_mobile/config/config.dart';
 
 class NewsDetailPage extends StatelessWidget {
   final NewsEntry news;
@@ -27,9 +28,8 @@ class NewsDetailPage extends StatelessWidget {
             // Thumbnail image
             if (news.thumbnail.isNotEmpty)
               Image.network(
-                // GANTI URL sesuai kebutuhan
-                'http://10.0.2.2:8000/proxy-image/?url=${Uri.encodeComponent(news.thumbnail)}',
-                // Untuk web: 'http://localhost:8000/proxy-image/?url=${Uri.encodeComponent(news.thumbnail)}'
+                // PERBAIKAN: Gunakan Config class
+                Config.getProxyImageUrl(news.thumbnail),
                 width: double.infinity,
                 height: 250,
                 fit: BoxFit.cover,
