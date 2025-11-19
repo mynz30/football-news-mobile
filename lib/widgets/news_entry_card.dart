@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:football_news/models/news_entry.dart';
+import 'package:football_news_mobile/models/news_entry.dart';
+import 'package:football_news_mobile/config/config.dart';
 
 class NewsEntryCard extends StatelessWidget {
   final NewsEntry news;
@@ -30,21 +31,53 @@ class NewsEntryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Thumbnail
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: Image.network(
-                    'http://localhost:8000/proxy-image/?url=${Uri.encodeComponent(news.thumbnail)}',
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
+                if (news.thumbnail.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      // Gunakan Config class untuk proxy image
+                      Config.getProxyImageUrl(news.thumbnail),
                       height: 150,
-                      color: Colors.grey[300],
-                      child: const Center(child: Icon(Icons.broken_image)),
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          height: 150,
+                          color: Colors.grey[300],
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        print('Error loading image: $error');
+                        return Container(
+                          height: 150,
+                          color: Colors.grey[300],
+                          child: const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Image unavailable',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                ),
-                const SizedBox(height: 8),
+                if (news.thumbnail.isNotEmpty) const SizedBox(height: 8),
 
                 // Title
                 Text(
@@ -53,11 +86,27 @@ class NewsEntryCard extends StatelessWidget {
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 6),
 
-                // Category
-                Text('Category: ${news.category}'),
+                // Category with badge style
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.indigo.shade100,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    news.category.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.indigo.shade700,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 6),
 
                 // Content preview
@@ -67,19 +116,53 @@ class NewsEntryCard extends StatelessWidget {
                       : news.content,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Colors.black54),
-                ),
-                const SizedBox(height: 6),
-
-                // Featured indicator
-                if (news.isFeatured)
-                  const Text(
-                    'Featured',
-                    style: TextStyle(
-                      color: Colors.amber,
-                      fontWeight: FontWeight.bold
-                    ),
+                  style: const TextStyle(
+                    color: Colors.black54,
+                    fontSize: 14,
                   ),
+                ),
+                const SizedBox(height: 8),
+
+                // Footer with featured badge and views
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Featured indicator
+                    if (news.isFeatured)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.amber,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'Featured',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      )
+                    else
+                      const SizedBox.shrink(),
+                    
+                    // Views count
+                    Row(
+                      children: [
+                        const Icon(Icons.visibility, size: 16, color: Colors.grey),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${news.newsViews} views',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
